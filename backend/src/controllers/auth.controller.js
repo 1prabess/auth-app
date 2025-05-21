@@ -2,7 +2,13 @@ import { User } from "../models/user.model.js";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
 import { generateAndSetToken } from "../utils/generateAndSetToken.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../utils/sendEmail.js";
+import {
+  sendResetPasswordEmail,
+  sendResetPasswordSuccessEmail,
+  sendVerificationEmail,
+  sendWelcomeEmail,
+} from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 export const register = async (req, res) => {
   try {
@@ -41,7 +47,7 @@ export const register = async (req, res) => {
 
     await sendVerificationEmail(verificationToken, email);
 
-    res.status(StatusCodes.CREATED).json({
+    return res.status(StatusCodes.CREATED).json({
       message: "User registered successfully",
       data: { userId: user._id, name: user.name, email: user.email },
     });
@@ -76,7 +82,7 @@ export const verifyEmail = async (req, res) => {
 
     await sendWelcomeEmail(user.email);
 
-    res.status(StatusCodes.CREATED).json({
+    return res.status(StatusCodes.CREATED).json({
       message: "User verified successfully",
     });
   } catch (error) {
@@ -124,7 +130,78 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   res.clearCookie("token");
-  res.status(StatusCodes.OK).json({
+  return res.status(StatusCodes.OK).json({
     message: "User Logged out successfully",
   });
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: "User not found" });
+
+    const resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    const resetPasswordTokenExpiresAt = Date.now() + 1 * 60 * 60 * 10000;
+
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordTokenExpiresAt = resetPasswordTokenExpiresAt;
+
+    await user.save();
+
+    await sendResetPasswordEmail(resetPasswordToken, user.email);
+
+    return res.status(StatusCodes.CREATED).json({
+      message: "Reset password link sent to the email successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong. Please try again later.",
+      error: error.message,
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    const { token } = req.params;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user)
+      return res.status(StatusCodes.CONFLICT).json({
+        message: "Invalid or expired token",
+      });
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpiresAt = undefined;
+
+    await user.save();
+
+    await sendResetPasswordSuccessEmail(user.email);
+
+    return res.status(StatusCodes.CREATED).json({
+      message: "Password has been reset successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong. Please try again later.",
+      error: error.message,
+    });
+  }
 };
