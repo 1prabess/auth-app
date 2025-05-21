@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
 import { generateAndSetToken } from "../utils/generateAndSetToken.js";
+import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 export const register = async (req, res) => {
   try {
@@ -37,6 +38,8 @@ export const register = async (req, res) => {
     await user.save();
 
     generateAndSetToken(res, user._id);
+
+    await sendVerificationEmail(verificationToken, email);
 
     res.status(StatusCodes.CREATED).json({
       message: "User registered successfully",
