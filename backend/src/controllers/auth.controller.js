@@ -89,7 +89,37 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  res.status(200).json({ message: "hehe", jsj: "hello world" });
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res.status(StatusCodes.CONFLICT).json({
+        message: "Invalid Credentials",
+      });
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid)
+      return res.status(StatusCodes.CONFLICT).json({
+        message: "Invalid Credentials",
+      });
+
+    generateAndSetToken(res, user._id);
+
+    user.lastLogin = new Date();
+
+    return res.status(StatusCodes.OK).json({
+      message: "User logged in successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong. Please try again later.",
+      error: error.message,
+    });
+  }
 };
 
 export const logout = async (req, res) => {
