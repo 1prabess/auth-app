@@ -2,7 +2,7 @@ import { User } from "../models/user.model.js";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
 import { generateAndSetToken } from "../utils/generateAndSetToken.js";
-import { sendVerificationEmail } from "../utils/sendEmail.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../utils/sendEmail.js";
 
 export const register = async (req, res) => {
   try {
@@ -54,10 +54,47 @@ export const register = async (req, res) => {
   }
 };
 
+export const verifyEmail = async (req, res) => {
+  try {
+    const { verificationCode } = req.body;
+
+    const user = await User.findOne({
+      verificationToken: verificationCode,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user)
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: "Invalid verification code" });
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+
+    await user.save();
+
+    await sendWelcomeEmail(user.email);
+
+    res.status(StatusCodes.CREATED).json({
+      message: "User verified successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong. Please try again later.",
+      error: error.message,
+    });
+  }
+};
+
 export const login = async (req, res) => {
   res.status(200).json({ message: "hehe", jsj: "hello world" });
 };
 
 export const logout = async (req, res) => {
-  res.send("Logout");
+  res.clearCookie("token");
+  res.status(StatusCodes.OK).json({
+    message: "User Logged out successfully",
+  });
 };
