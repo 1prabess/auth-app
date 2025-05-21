@@ -98,3 +98,30 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const WELCOME_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome</title>
+</head>
+<body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+  <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <div style="background-color: #3f51b5; padding: 24px; text-align: center;">
+      <h1 style="color: white; margin: 0;">Welcome!</h1>
+    </div>
+    <div style="padding: 24px;">
+      <p>Hello,</p>
+      <p>Your email has been successfully verified.</p>
+      <p>We’re excited to have you on board. Thank you for joining us!</p>
+      <p style="margin-top: 30px;">Best regards,<br><strong>Your App Team</strong></p>
+    </div>
+    <div style="text-align: center; padding: 16px; background-color: #f0f0f0; font-size: 12px; color: #888;">
+      This is an automated message. Please do not reply.
+    </div>
+  </div>
+</body>
+</html>
+`;
