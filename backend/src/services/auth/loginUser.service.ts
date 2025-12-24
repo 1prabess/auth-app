@@ -7,6 +7,7 @@ import {
   refreshTokenSignOptions,
   signToken,
 } from "../../utils/jwt";
+import { getSafeUser } from "../../utils/user";
 
 export type LoginUserParams = {
   email: string;
@@ -46,14 +47,7 @@ export const loginUser = async (data: LoginUserParams) => {
 
   // return result
   return {
-    user: {
-      id: user._id,
-      email: user.email,
-      verified: user.verified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      __v: user.__v,
-    },
+    user: getSafeUser(user),
     refreshToken,
     accessToken,
   };
