@@ -1,12 +1,18 @@
 import { CONFLICT } from "../../constants/http";
+import { VerificationCodeType } from "../../constants/verificationCodeType";
 import SessionModel from "../../models/session.model";
 import UserModel from "../../models/user.model";
+import VerificationCodeModel from "../../models/verification.model";
 import appAssert from "../../utils/appAssert";
+import { oneYearFromNow } from "../../utils/date";
+import { getVerificationEmailTemplate } from "../../utils/emailTemplates";
 import {
   accessTokenSignOptions,
   refreshTokenSignOptions,
   signToken,
 } from "../../utils/jwt";
+import { sendEmail } from "../../utils/mailer";
+import { getSafeUser } from "../../utils/user";
 
 export type RegisterUserParams = {
   email: string;
@@ -26,14 +32,19 @@ export const registerUser = async (data: RegisterUserParams) => {
     password: data.password,
   });
 
-  const safeUser = {
-    id: user._id,
-    email: user.email,
-    verified: user.verified,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-    __v: user.__v,
-  };
+  // create verification
+  const verificationCode = await VerificationCodeModel.create({
+    userId: user._id,
+    type: VerificationCodeType.EmailVerification,
+    expiresAt: oneYearFromNow(),
+  });
+
+  // send verification email
+  await sendEmail(
+    user.email,
+    "Email Verification Code",
+    getVerificationEmailTemplate(verificationCode._id.toString())
+  );
 
   // create a new session
   const session = await SessionModel.create({
@@ -52,5 +63,5 @@ export const registerUser = async (data: RegisterUserParams) => {
     { sessionId: session._id, userId: user._id },
     accessTokenSignOptions
   );
-  return { user: safeUser, refreshToken, accessToken };
+  return { user: getSafeUser(user), refreshToken, accessToken };
 };
