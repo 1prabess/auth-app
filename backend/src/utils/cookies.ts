@@ -15,21 +15,29 @@ const defaults: CookieOptions = {
   secure,
 };
 
+export const getRefreshTokenCookieOptions = () => {
+  return {
+    ...defaults,
+    expires: thirtyDaysFromNow(),
+    path: "/auth/refresh",
+  };
+};
+
+export const getAccessTokenCookieOptions = () => {
+  return {
+    ...defaults,
+    expires: fifteenMinutesFromNow(),
+  };
+};
+
 export const setAuthCookies = ({
   res,
   refreshToken,
   accessToken,
 }: AuthCookiesParams) => {
   return res
-    .cookie("refreshToken", refreshToken, {
-      ...defaults,
-      expires: thirtyDaysFromNow(),
-      path: "/auth/refresh",
-    })
-    .cookie("accessToken", accessToken, {
-      ...defaults,
-      expires: fifteenMinutesFromNow(),
-    });
+    .cookie("refreshToken", refreshToken, getRefreshTokenCookieOptions())
+    .cookie("accessToken", accessToken, getAccessTokenCookieOptions());
 };
 
 export const clearAuthCookies = (res: Response) => {
