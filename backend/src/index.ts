@@ -2,11 +2,14 @@ import "dotenv/config";
 import express from "express";
 import connectDB from "./config/db";
 import { NODE_ENV, PORT } from "./constants/env";
-import errorHandler from "./middlewares/errorHandler.middleware";
+import errorHandler from "./middlewares/error-handler.middleware";
 import cookieParser from "cookie-parser";
 import { OK } from "./constants/http";
 import catchErrors from "./utils/catchErrors";
 import authRoutes from "./routes/auth.route";
+import authenticate from "./middlewares/authenticate.middleware";
+import userRoutes from "./routes/user.route";
+import sessionRoutes from "./routes/session.route";
 
 const app = express();
 
@@ -19,6 +22,8 @@ app.use(
 app.use(cookieParser());
 
 app.use("/auth", authRoutes);
+app.use("/user", authenticate, userRoutes);
+app.use("/sessions", authenticate, sessionRoutes);
 
 app.get(
   "/health",
