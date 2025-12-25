@@ -5,6 +5,7 @@ export const getSafeUser = (user: UserDocument) => {
   return {
     id: obj._id,
     email: obj.email,
+    role: obj.role,
     verified: obj.verified,
     createdAt: obj.createdAt,
     updatedAt: obj.updatedAt,
