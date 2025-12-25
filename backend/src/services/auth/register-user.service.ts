@@ -1,11 +1,11 @@
 import { CONFLICT } from "../../constants/http";
-import { VerificationCodeType } from "../../constants/verificationCodeType";
+import { VerificationCodeType } from "../../constants/verification-code-type";
 import SessionModel from "../../models/session.model";
 import UserModel from "../../models/user.model";
 import VerificationCodeModel from "../../models/verification.model";
-import appAssert from "../../utils/appAssert";
+import appAssert from "../../utils/app-assert";
 import { oneYearFromNow } from "../../utils/date";
-import { getVerificationEmailTemplate } from "../../utils/emailTemplates";
+import { getVerificationEmailTemplate } from "../../utils/email-templates";
 import {
   accessTokenSignOptions,
   refreshTokenSignOptions,

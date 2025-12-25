@@ -1,7 +1,7 @@
 import { UNAUTHORIZED } from "../../constants/http";
 import SessionModel from "../../models/session.model";
 import UserModel from "../../models/user.model";
-import appAssert from "../../utils/appAssert";
+import appAssert from "../../utils/app-assert";
 import {
   accessTokenSignOptions,
   refreshTokenSignOptions,

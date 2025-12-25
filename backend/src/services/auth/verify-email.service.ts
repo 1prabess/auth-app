@@ -1,8 +1,8 @@
 import { INTERNAL_SERVER_ERROR, NOT_FOUND } from "../../constants/http";
-import { VerificationCodeType } from "../../constants/verificationCodeType";
+import { VerificationCodeType } from "../../constants/verification-code-type";
 import UserModel from "../../models/user.model";
 import VerificationCodeModel from "../../models/verification.model";
-import appAssert from "../../utils/appAssert";
+import appAssert from "../../utils/app-assert";
 
 export const verifyEmail = async (code: string) => {
   // get the verification code

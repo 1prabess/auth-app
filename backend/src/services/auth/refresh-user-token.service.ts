@@ -1,6 +1,6 @@
 import { UNAUTHORIZED } from "../../constants/http";
 import SessionModel from "../../models/session.model";
-import appAssert from "../../utils/appAssert";
+import appAssert from "../../utils/app-assert";
 import { ONE_DAY_MS, thirtyDaysFromNow } from "../../utils/date";
 import {
   accessTokenSignOptions,
