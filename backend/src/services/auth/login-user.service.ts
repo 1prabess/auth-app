@@ -41,6 +41,7 @@ export const loginUser = async (data: LoginUserParams) => {
     {
       sessionId: session._id,
       userId: user._id,
+      role: user.role,
     },
     accessTokenSignOptions
   );

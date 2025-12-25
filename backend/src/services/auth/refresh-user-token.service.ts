@@ -1,5 +1,6 @@
 import { UNAUTHORIZED } from "../../constants/http";
 import SessionModel from "../../models/session.model";
+import UserModel from "../../models/user.model";
 import appAssert from "../../utils/app-assert";
 import { ONE_DAY_MS, thirtyDaysFromNow } from "../../utils/date";
 import {
@@ -27,6 +28,10 @@ export const refreshUserToken = async (refreshToken: string) => {
     "Invalid or expired session"
   );
 
+  // load user to get role
+  const user = await UserModel.findById(session.userId);
+  appAssert(user, UNAUTHORIZED, "User not found");
+
   // check whether the refresh token should be rotated
   const sessionNeedsRefresh =
     session.expiresAt.getTime() - Date.now() <= ONE_DAY_MS;
@@ -47,6 +52,7 @@ export const refreshUserToken = async (refreshToken: string) => {
     {
       sessionId: session._id,
       userId: session.userId,
+      role: user.role,
     },
     accessTokenSignOptions
   );

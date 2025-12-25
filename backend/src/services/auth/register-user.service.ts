@@ -60,7 +60,7 @@ export const registerUser = async (data: RegisterUserParams) => {
 
   // sign access token
   const accessToken = signToken(
-    { sessionId: session._id, userId: user._id },
+    { sessionId: session._id, userId: user._id, role: user.role },
     accessTokenSignOptions
   );
   return { user: getSafeUser(user), refreshToken, accessToken };
