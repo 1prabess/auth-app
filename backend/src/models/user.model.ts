@@ -1,6 +1,6 @@
 import { Document, model, Schema } from "mongoose";
-import bcrypt from "bcrypt";
 import { comparePassword, hashPassword } from "../utils/bcrypt";
+import { UserRole } from "../constants/roles";
 
 export interface UserDocument extends Document {
   email: string;
@@ -8,6 +8,7 @@ export interface UserDocument extends Document {
   verified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  role: UserRole;
   comparePassword: (val: string) => Promise<boolean>;
 }
 
@@ -23,6 +24,13 @@ const userSchema = new Schema<UserDocument>(
       type: String,
       required: true,
       min: 6,
+    },
+
+    role: {
+      type: String,
+      enum: Object.values(UserRole),
+      required: true,
+      default: UserRole.USER,
     },
 
     verified: {
