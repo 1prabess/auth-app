@@ -1,17 +1,19 @@
-import { APP_ORIGIN } from "../constants/env";
 import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
 import {
   emailSchema,
   loginSchema,
   registerSchema,
+  resetPasswordSchema,
   verifyCodeSchema,
 } from "../schemas/auth.schema";
-import { loginUser } from "../services/auth/loginUser.service";
-import { logoutUser } from "../services/auth/logoutUser.service";
-import { refreshUserToken } from "../services/auth/refreshUserToken.service";
-import { registerUser } from "../services/auth/registerUser.service";
-import { verifyEmail } from "../services/auth/verifyEmail.service";
-import appAssert from "../utils/appAssert";
+import { forgotPassword } from "../services/auth/forgot-password.service";
+import { loginUser } from "../services/auth/login-user.service";
+import { logoutUser } from "../services/auth/logout-user.service";
+import { refreshUserToken } from "../services/auth/refresh-user-token.service";
+import { registerUser } from "../services/auth/register-user.service";
+import { resetPassword } from "../services/auth/reset-password.service";
+import { verifyEmail } from "../services/auth/verify-email.service";
+import appAssert from "../utils/app-assert";
 import catchErrors from "../utils/catchErrors";
 import {
   clearAuthCookies,
@@ -90,9 +92,41 @@ export const refreshUserTokenHandler = catchErrors(async (req, res) => {
 });
 
 export const verifyEmailHandler = catchErrors(async (req, res) => {
+  // validate verification code
   const verificationCode = verifyCodeSchema.parse(req.params.code);
 
+  // call verifyEmail service
   await verifyEmail(verificationCode);
 
-  return res.redirect(`${APP_ORIGIN}/verify-success`);
+  // return response
+  return res.status(OK).json({
+    message: "Verification complete",
+  });
+});
+
+export const forgotPasswordHandler = catchErrors(async (req, res) => {
+  // validate email
+  const email = emailSchema.parse(req.body.email);
+
+  // call forgotPassword service
+  await forgotPassword(email);
+
+  // return response
+  return res.status(OK).json({
+    message: "An email to reset password has been sent",
+  });
+});
+
+export const resetPasswordHandler = catchErrors(async (req, res) => {
+  // validate request
+  const request = resetPasswordSchema.parse(req.body);
+
+  // call resetPassword service
+  const { user } = await resetPassword(request);
+
+  // return response
+  return res.status(OK).json({
+    message: "Password reset complete",
+    user,
+  });
 });
