@@ -3,18 +3,16 @@ import { SignOptions } from "jsonwebtoken";
 import { SessionDocument } from "../models/session.model";
 import { UserDocument } from "../models/user.model";
 import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from "../constants/env";
+import { UserRole } from "../constants/roles";
 
 export type AccessTokenPayload = {
   userId: UserDocument["_id"];
   sessionId: SessionDocument["_id"];
+  role: UserRole;
 };
 
 export type RefreshTokenPayload = {
   sessionId: SessionDocument["_id"];
-};
-
-const defaults: SignOptions = {
-  audience: ["user"],
 };
 
 type SignOptionsAndSecret = SignOptions & { secret: string };
@@ -44,7 +42,7 @@ export const signToken = (
 ) => {
   const { secret, ...signOpts } = options;
 
-  return jwt.sign(payload, secret, { ...defaults, ...signOpts });
+  return jwt.sign(payload, secret, { ...signOpts });
 };
 
 export const verifyToken = <TPayload extends object>(
