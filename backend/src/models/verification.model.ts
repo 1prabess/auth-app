@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose";
-import { VerificationCodeType } from "../constants/verificationCodeType";
+import { VerificationCodeType } from "../constants/verification-code-type";
 
 export interface VerificationCodeDocument extends Document {
   userId: Types.ObjectId;
