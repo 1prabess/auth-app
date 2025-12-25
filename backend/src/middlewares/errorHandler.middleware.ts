@@ -1,7 +1,7 @@
 import { ErrorRequestHandler } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "../constants/http";
 import { Response } from "express";
-import AppError from "../utils/AppError";
+import AppError from "../utils/app-error";
 import z from "zod";
 
 const handleAppError = (res: Response, error: AppError) => {
