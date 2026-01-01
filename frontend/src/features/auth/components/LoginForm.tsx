@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { loginSchema, type LoginFormData } from "@/schemas/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLogin } from "../hooks/useLogin";
+import { Link } from "react-router";
 
 const LoginForm = () => {
   const {
@@ -68,16 +69,37 @@ const LoginForm = () => {
                 {errors.password.message}
               </span>
             )}
+
+            {/* Forgot Password Link */}
+            <div className=" mt-1">
+              <Link
+                to="/password/forgot"
+                className="text-sm text-black hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full  text-sm bg-black text-white hover:bg-gray-800"
+            className="w-full text-sm bg-black text-white hover:bg-gray-800"
           >
             Login
           </Button>
         </form>
+
+        {/* Register link */}
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="font-medium text-black hover:underline"
+          >
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   );
