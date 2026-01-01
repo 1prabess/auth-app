@@ -13,7 +13,7 @@ const Users = () => {
 
       <div className="overflow-x-auto  border border-gray-200">
         <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+          <thead className="bg-gray-50  border text-gray-600 uppercase text-xs">
             <tr>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Role</th>
