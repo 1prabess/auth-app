@@ -1,10 +1,18 @@
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import { NavLink } from "react-router";
+import { Button } from "./button";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
-type NavbarProps = {
-  isAdmin: boolean;
-};
+const Navbar = () => {
+  const { data: user } = useAuth();
 
-const Navbar = ({ isAdmin }: NavbarProps) => {
+  const isAdmin = user?.role === "admin";
+
+  const { mutate: logout, isPending } = useLogout();
+
+  const handleLogout = () => {
+    logout();
+  };
   return (
     <nav className="w-full border-b bg-white">
       <div className="mx-auto flex  items-center justify-between py-4">
@@ -53,6 +61,12 @@ const Navbar = ({ isAdmin }: NavbarProps) => {
               </NavLink>
             </li>
           )}
+
+          <li>
+            <Button type="button" disabled={isPending} onClick={handleLogout}>
+              Logout
+            </Button>
+          </li>
         </ul>
       </div>
     </nav>
