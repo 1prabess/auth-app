@@ -6,6 +6,9 @@ import SessionPage from "./features/session/pages/SessionPage";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminPage from "./features/admin/pages/AdminPage";
 import AppLayout from "./layouts/AppLayout";
+import VerificationPage from "./features/auth/pages/VerificationPage";
+import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "./features/auth/pages/ResetPasswordPage";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/sessions",
         element: <SessionPage />,
+      },
+      {
+        path: "/email/verify/:code",
+        element: <VerificationPage />,
       },
     ],
   },
@@ -41,6 +48,14 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/password/forgot",
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: "/password/reset/",
+    element: <ResetPasswordPage />,
   },
 ]);
 
