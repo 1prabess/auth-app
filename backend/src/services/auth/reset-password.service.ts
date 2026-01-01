@@ -35,6 +35,10 @@ export const resetPassword = async (data: ResetPasswordParams) => {
       new: true,
     }
   );
+
+  // delete reset password code
+  await validCode.deleteOne();
+
   appAssert(
     updatedUser,
     INTERNAL_SERVER_ERROR,
