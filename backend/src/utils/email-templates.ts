@@ -1,7 +1,7 @@
-const baseUrl = "http://localhost:4004";
+import { APP_ORIGIN } from "../constants/env";
 
 export const getVerificationEmailTemplate = (code: string) => {
-  const verificationLink = `${baseUrl}/auth/email/verify/${code}`;
+  const verificationLink = `${APP_ORIGIN}/email/verify/${code}`;
 
   return `
   <div>
