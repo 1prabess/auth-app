@@ -21,3 +21,8 @@ export type User = {
   updatedAt: string;
   __v: number;
 };
+
+export type ResetPasswordFormData = {
+  verificationCode: string;
+  password: string;
+};
