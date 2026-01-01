@@ -5,8 +5,6 @@ import { useAuth } from "../features/auth/hooks/useAuth";
 const AppLayout = () => {
   const { data: user, isPending } = useAuth();
 
-  const isAdmin = user?.role === "admin";
-
   if (isPending) {
     return <div>Checking auth...</div>;
   }
@@ -15,7 +13,7 @@ const AppLayout = () => {
     <div className="max-w-7xl m-auto px-8">
       {user ? (
         <div>
-          <Navbar isAdmin={isAdmin} />
+          <Navbar />
           <Outlet />
         </div>
       ) : (
