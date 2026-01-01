@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { UNAUTHORIZED } from "../../constants/http";
 import SessionModel from "../../models/session.model";
 import UserModel from "../../models/user.model";
@@ -18,11 +19,21 @@ export type LoginUserParams = {
 export const loginUser = async (data: LoginUserParams) => {
   // find the user
   const user = await UserModel.findOne({ email: data.email });
-  appAssert(user, UNAUTHORIZED, "Invalid email or password");
+  appAssert(
+    user,
+    UNAUTHORIZED,
+    "Invalid email or password",
+    AppErrorCode.InvalidCredentials
+  );
 
   // validate the password
   const isPasswordValid = await user.comparePassword(data.password);
-  appAssert(isPasswordValid, UNAUTHORIZED, "Invalid email or password");
+  appAssert(
+    isPasswordValid,
+    UNAUTHORIZED,
+    "Invalid email or password",
+    AppErrorCode.InvalidCredentials
+  );
 
   // create session
   const session = await SessionModel.create({

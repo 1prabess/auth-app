@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { INTERNAL_SERVER_ERROR, NOT_FOUND } from "../../constants/http";
 import { VerificationCodeType } from "../../constants/verification-code-type";
 import UserModel from "../../models/user.model";
@@ -17,7 +18,12 @@ export const resetPassword = async (data: ResetPasswordParams) => {
     type: VerificationCodeType.PasswordReset,
     expiresAt: { $gt: new Date() },
   });
-  appAssert(validCode, NOT_FOUND, "Invalid or expired code");
+  appAssert(
+    validCode,
+    NOT_FOUND,
+    "Invalid or expired code",
+    AppErrorCode.InvalidVerificationCode
+  );
 
   // update user password
   const updatedUser = await UserModel.findByIdAndUpdate(
@@ -29,7 +35,12 @@ export const resetPassword = async (data: ResetPasswordParams) => {
       new: true,
     }
   );
-  appAssert(updatedUser, INTERNAL_SERVER_ERROR, "Failed to update password");
+  appAssert(
+    updatedUser,
+    INTERNAL_SERVER_ERROR,
+    "Failed to update password",
+    AppErrorCode.InternalServerError
+  );
 
   return {
     user: getSafeUser(updatedUser),

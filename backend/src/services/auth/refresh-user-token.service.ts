@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { UNAUTHORIZED } from "../../constants/http";
 import SessionModel from "../../models/session.model";
 import UserModel from "../../models/user.model";
@@ -18,19 +19,25 @@ export const refreshUserToken = async (refreshToken: string) => {
     refreshToken,
     refreshTokenVerifyOptions
   );
-  appAssert(!error && payload, UNAUTHORIZED, "Invalid refresh token");
+  appAssert(
+    !error && payload,
+    UNAUTHORIZED,
+    "Invalid refresh token",
+    AppErrorCode.InvalidRefreshToken
+  );
 
   // load session and ensure it is still valid
   const session = await SessionModel.findById(payload.sessionId);
   appAssert(
     session && session.expiresAt.getTime() > Date.now(),
     UNAUTHORIZED,
-    "Invalid or expired session"
+    "Invalid or expired session",
+    AppErrorCode.InvalidRefreshToken
   );
 
   // load user to get role
   const user = await UserModel.findById(session.userId);
-  appAssert(user, UNAUTHORIZED, "User not found");
+  appAssert(user, UNAUTHORIZED, "User not found", AppErrorCode.UserNotFound);
 
   // check whether the refresh token should be rotated
   const sessionNeedsRefresh =

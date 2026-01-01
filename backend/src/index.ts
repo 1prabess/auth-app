@@ -1,9 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import connectDB from "./config/db";
-import { NODE_ENV, PORT } from "./constants/env";
+import { APP_ORIGIN, NODE_ENV, PORT } from "./constants/env";
 import errorHandler from "./middlewares/error-handler.middleware";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import { OK } from "./constants/http";
 import catchErrors from "./utils/catchErrors";
 import authRoutes from "./routes/auth.route";
@@ -20,6 +21,7 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.use(cors({ origin: APP_ORIGIN, credentials: true }));
 
 app.use("/auth", authRoutes);
 app.use("/user", authenticate, userRoutes);

@@ -7,7 +7,7 @@ type AppAssert = (
   condition: any,
   httpStatusCode: HttpStatusCode,
   message: string,
-  appErrorCode?: AppErrorCode
+  appErrorCode: AppErrorCode
 ) => asserts condition;
 
 const appAssert: AppAssert = (

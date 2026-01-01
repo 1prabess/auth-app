@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { INTERNAL_SERVER_ERROR, NOT_FOUND } from "../../constants/http";
 import { VerificationCodeType } from "../../constants/verification-code-type";
 import UserModel from "../../models/user.model";
@@ -11,7 +12,12 @@ export const verifyEmail = async (code: string) => {
     type: VerificationCodeType.EmailVerification,
     expiresAt: { $gt: new Date() },
   });
-  appAssert(validCode, NOT_FOUND, "Invalid or expired verification code");
+  appAssert(
+    validCode,
+    NOT_FOUND,
+    "Invalid or expired verification code",
+    AppErrorCode.InvalidVerificationCode
+  );
 
   // get user by id and update
   const updatedUser = await UserModel.findByIdAndUpdate(
@@ -21,7 +27,12 @@ export const verifyEmail = async (code: string) => {
     },
     { new: true }
   );
-  appAssert(updatedUser, INTERNAL_SERVER_ERROR, "Failed to verify email");
+  appAssert(
+    updatedUser,
+    INTERNAL_SERVER_ERROR,
+    "Failed to verify email",
+    AppErrorCode.InternalServerError
+  );
 
   // delete verification code
   await validCode.deleteOne();

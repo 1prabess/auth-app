@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { UNAUTHORIZED } from "../../constants/http";
 import SessionModel from "../../models/session.model";
 import appAssert from "../../utils/app-assert";
@@ -14,7 +15,12 @@ export const logoutUser = async (accessToken: string) => {
     accessTokenVerifyOptions
   );
 
-  appAssert(!error && payload, UNAUTHORIZED, "Invalid access token");
+  appAssert(
+    !error && payload,
+    UNAUTHORIZED,
+    "Invalid access token",
+    AppErrorCode.InvalidAccessToken
+  );
 
   // remove session to log out
   await SessionModel.findByIdAndDelete(payload.sessionId);

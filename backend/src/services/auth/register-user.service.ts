@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { CONFLICT } from "../../constants/http";
 import { VerificationCodeType } from "../../constants/verification-code-type";
 import SessionModel from "../../models/session.model";
@@ -24,7 +25,12 @@ export const registerUser = async (data: RegisterUserParams) => {
   // check for existing user
   const existingUser = await UserModel.exists({ email: data.email });
 
-  appAssert(!existingUser, CONFLICT, "User already exists");
+  appAssert(
+    !existingUser,
+    CONFLICT,
+    "User already exists",
+    AppErrorCode.EmailAlreadyExists
+  );
 
   // create a new user
   const user = await UserModel.create({

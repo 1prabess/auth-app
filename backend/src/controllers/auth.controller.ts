@@ -1,3 +1,4 @@
+import AppErrorCode from "../constants/app-error-code";
 import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
 import {
   emailSchema,
@@ -13,6 +14,8 @@ import { refreshUserToken } from "../services/auth/refresh-user-token.service";
 import { registerUser } from "../services/auth/register-user.service";
 import { resetPassword } from "../services/auth/reset-password.service";
 import { verifyEmail } from "../services/auth/verify-email.service";
+import { ApiSuccessResponse } from "../types/api.types";
+import { User } from "../types/user.types";
 import appAssert from "../utils/app-assert";
 import catchErrors from "../utils/catchErrors";
 import {
@@ -32,10 +35,16 @@ export const registerHandler = catchErrors(async (req, res) => {
   // call registerUser service
   const { user, refreshToken, accessToken } = await registerUser(request);
 
-  // return response
+  // prepare response
+  const response: ApiSuccessResponse<{ user: User }> = {
+    message: "User created successfully",
+    data: { user },
+  };
+
+  // set cookies and return response
   return setAuthCookies({ res, refreshToken, accessToken })
     .status(CREATED)
-    .json({ message: "User created successfully", user });
+    .json(response);
 });
 
 export const loginHandler = catchErrors(async (req, res) => {
@@ -48,24 +57,38 @@ export const loginHandler = catchErrors(async (req, res) => {
   // call loginUser service
   const { user, refreshToken, accessToken } = await loginUser(request);
 
-  // return response
+  // prepare typed response
+  const response: ApiSuccessResponse<{ user: User }> = {
+    message: "Login successful",
+    data: { user },
+  };
+
+  // set cookies and return response
   return setAuthCookies({ res, refreshToken, accessToken })
     .status(OK)
-    .json({ user });
+    .json(response);
 });
 
 export const logoutHandler = catchErrors(async (req, res) => {
   // get access token from cookies
   const accessToken = req.cookies.accessToken as string | undefined;
-  appAssert(accessToken, UNAUTHORIZED, "Missing access token");
+
+  appAssert(
+    accessToken,
+    UNAUTHORIZED,
+    "missing access token",
+    AppErrorCode.MissingAccessToken
+  );
 
   // call logoutUser service
   await logoutUser(accessToken);
 
   // clear refresh & access token cookies and return response
-  return clearAuthCookies(res)
-    .status(OK)
-    .json({ message: "Logout successfull" });
+  const response: ApiSuccessResponse<never> = {
+    message: "Logout successful",
+  };
+
+  return clearAuthCookies(res).status(OK).json(response);
 });
 
 export const refreshUserTokenHandler = catchErrors(async (req, res) => {
@@ -79,16 +102,18 @@ export const refreshUserTokenHandler = catchErrors(async (req, res) => {
 
   // if a new refresh token was issued (token rotation), replace the existing refresh token cookie
   if (newRefreshToken) {
-    res.cookie("refreshToken", refreshToken, getRefreshTokenCookieOptions());
+    res.cookie("refreshToken", newRefreshToken, getRefreshTokenCookieOptions());
   }
 
-  // set new refresh token
-  return res
-    .status(OK)
-    .cookie("accessToken", accessToken, getAccessTokenCookieOptions())
-    .json({
-      message: "Access token refreshed successfully",
-    });
+  // set new access token cookie
+  res.cookie("accessToken", accessToken, getAccessTokenCookieOptions());
+
+  // return typed response
+  const response: ApiSuccessResponse<never> = {
+    message: "Access token refreshed successfully",
+  };
+
+  return res.status(OK).json(response);
 });
 
 export const verifyEmailHandler = catchErrors(async (req, res) => {
@@ -98,10 +123,11 @@ export const verifyEmailHandler = catchErrors(async (req, res) => {
   // call verifyEmail service
   await verifyEmail(verificationCode);
 
-  // return response
-  return res.status(OK).json({
+  const response: ApiSuccessResponse<never> = {
     message: "Verification complete",
-  });
+  };
+
+  return res.status(OK).json(response);
 });
 
 export const forgotPasswordHandler = catchErrors(async (req, res) => {
@@ -111,10 +137,11 @@ export const forgotPasswordHandler = catchErrors(async (req, res) => {
   // call forgotPassword service
   await forgotPassword(email);
 
-  // return response
-  return res.status(OK).json({
+  const response: ApiSuccessResponse<never> = {
     message: "An email to reset password has been sent",
-  });
+  };
+
+  return res.status(OK).json(response);
 });
 
 export const resetPasswordHandler = catchErrors(async (req, res) => {
@@ -124,9 +151,10 @@ export const resetPasswordHandler = catchErrors(async (req, res) => {
   // call resetPassword service
   const { user } = await resetPassword(request);
 
-  // return response
-  return res.status(OK).json({
+  const response: ApiSuccessResponse<{ user: User }> = {
     message: "Password reset complete",
-    user,
-  });
+    data: { user },
+  };
+
+  return res.status(OK).json(response);
 });

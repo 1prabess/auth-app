@@ -1,3 +1,4 @@
+import AppErrorCode from "../../constants/app-error-code";
 import { APP_ORIGIN } from "../../constants/env";
 import { NOT_FOUND } from "../../constants/http";
 import { VerificationCodeType } from "../../constants/verification-code-type";
@@ -11,7 +12,7 @@ import { sendEmail } from "../../utils/mailer";
 export const forgotPassword = async (email: string) => {
   // get the user by email
   const user = await UserModel.findOne({ email });
-  appAssert(user, NOT_FOUND, "No user found");
+  appAssert(user, NOT_FOUND, "No user found", AppErrorCode.UserNotFound);
 
   // create a verification code for password reset
   const expiresAt = oneHourFromNow();

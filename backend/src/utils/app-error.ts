@@ -3,12 +3,12 @@ import { HttpStatusCode } from "../constants/http";
 
 class AppError extends Error {
   public statusCode: HttpStatusCode;
-  public errorCode?: AppErrorCode;
+  public errorCode: AppErrorCode;
 
   constructor(
     statusCode: HttpStatusCode,
     message: string,
-    errorCode?: AppErrorCode
+    errorCode: AppErrorCode
   ) {
     super(message);
     this.statusCode = statusCode;
