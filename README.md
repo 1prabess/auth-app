@@ -24,9 +24,9 @@ Both tokens are sent to the client as **secure, HTTP-only cookies**.
 
 ### ♻️ Token Refresh Mechanism
 
-If a request fails due to an expired Access Token (`401 AccessTokenExpired`):
+If a request fails due to an expired or invalid Access Token (`401 InvalidAccessToken`):
 
-1. The frontend automatically calls the `/refresh` endpoint.
+1. The frontend automatically calls the `/refresh` endpoint where the refresh token is used to generate new access token.
 2. If the refresh is successful (`200 OK`), a new Access Token is issued.
 3. The original request is retried transparently, keeping the user logged in.
 
